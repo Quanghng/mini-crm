@@ -65,7 +65,7 @@ go version
 
 ```bash
 git clone https://github.com/Quanghng/mini-crm
-cd Mini CRM
+cd mini-crm
 ```
 
 ### 2. Initialiser les dépendances
@@ -77,6 +77,7 @@ go mod tidy
 ### 3. Lancer en mode interactif (menu)
 
 ```bash
+cd cmd
 go run .
 ```
 
