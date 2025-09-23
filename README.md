@@ -1,7 +1,3 @@
-⚔️ Voici un **README professionnel** pour ton projet Go Mini CRM :
-
----
-
 # Mini CRM (Go CLI)
 
 ## 📌 Description
