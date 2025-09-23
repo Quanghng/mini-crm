@@ -1,10 +1,10 @@
 package main
 
 import (
-	"TP/internal/handler"
 	"bufio"
 	"flag"
 	"fmt"
+	handler "mini-crm/internal"
 	"os"
 	"strconv"
 	"strings"
@@ -12,7 +12,7 @@ import (
 
 func main() {
 
-	// Mode flag 
+	// Mode flag
 	var addContact bool
 	var nom string
 	var email string
@@ -28,7 +28,8 @@ func main() {
 			fmt.Println("Erreur : --nom et --email sont obligatoires avec --addContact")
 			return
 		}
-		handler.AddContact(nom, email)
+		newContact := &handler.Contact{Id: handler.CurrentId(), Nom: nom, Email: email}
+		newContact.AddContact(nom, email)
 		return
 	}
 
@@ -48,7 +49,7 @@ func main() {
 		// Lire entrée utilisateur
 		optString, _ := scanner.ReadString('\n')
 		optString = strings.TrimSpace(optString)
-		
+
 		opt, err := strconv.Atoi(optString)
 		if err != nil {
 			fmt.Println("Veuillez entrer un nombre valide.")
@@ -66,7 +67,9 @@ func main() {
 			email, _ := scanner.ReadString('\n')
 			email = strings.TrimSpace(email)
 
-			handler.AddContact(nom, email)
+			// Pointeur vers le nouveau struct
+			newContact := &handler.Contact{Id: handler.CurrentId(), Nom: nom, Email: email}
+			newContact.AddContact(nom, email)
 		case 2:
 			handler.GetContacts()
 		case 3:
@@ -81,7 +84,11 @@ func main() {
 				continue
 			}
 
-			handler.DeleteContact(id)
+			if c := handler.GetContactById(id); c != nil {
+				c.DeleteContact(id)
+			} else {
+				fmt.Println("Aucun contact trouvé avec cet ID.")
+			}
 		case 4:
 			// Mettre à jour un contact
 			fmt.Print("ID du contact à mettre à jour: ")
@@ -101,7 +108,11 @@ func main() {
 			email, _ := scanner.ReadString('\n')
 			email = strings.TrimSpace(email)
 
-			handler.UpdateContact(id, nom, email)
+			if c := handler.GetContactById(id); c != nil {
+				c.UpdateContact(id, nom, email)
+			} else {
+				fmt.Println("Aucun contact trouvé avec cet ID.")
+			}
 		case 5:
 			fmt.Println("Fermeture du programme. Au revoir !")
 			return
