@@ -12,16 +12,16 @@ var DB *gorm.DB
 
 func ConnectDB() {
 	var err error
-	DB, err = gorm.Open(sqlite.Open("contacts.db"), &gorm.Config{})
+	DB, err = gorm.Open(sqlite.Open("./data/contacts.db"), &gorm.Config{})
 	if err != nil {
 		log.Fatalf("Echec de la connexion a la base de donnees : %v", err)
 	}
 
-	log.Printf("Connexion a la base de donnees SQLite reussie !")
+	// log.Printf("Connexion a la base de donnees SQLite reussie !")
 
 	err = DB.AutoMigrate(&models.Contact{})
 	if err != nil {
 		log.Fatalf("Echec de la migration de la base de donnees : %v", err)
 	}
-	log.Printf("Migration de la base de donnees reussie !")
+	// log.Printf("Migration de la base de donnees reussie !")
 }

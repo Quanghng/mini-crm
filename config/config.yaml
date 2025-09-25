@@ -1,0 +1,15 @@
+# config.yaml
+
+storage:
+  type: gorm   # valeurs possibles: gorm | json
+
+database:
+  gorm:
+    name: contacts.db
+    dsn: ./data/contacts.db
+  json:
+    name: contacts.json
+    dsn: ./data/contacts.json
+
+app:
+  environment: development
