@@ -1,108 +1,193 @@
-# Mini CRM (Go CLI)
+# Mini CRM
 
-## 📌 Description
+Mini CRM est une application CLI (ligne de commande) simple pour gérer des contacts. Elle permet d’ajouter, lister, mettre à jour et supprimer des contacts. L’application supporte trois types de stockage :
 
-Mini CRM est une petite application **en ligne de commande** écrite en Go.
-Elle permet de **gérer une liste de contacts** avec des opérations simples :
-
-* Ajouter un contact
-* Lister tous les contacts
-* Supprimer un contact
-* Mettre à jour un contact
-
-Deux modes d’utilisation :
-
-1. **Mode interactif (menu)** → Lancement classique du programme, l’utilisateur navigue dans un menu CLI.
-2. **Mode flags (exécution directe)** → Utilisation d’options en ligne de commande (`--addContact`, `--nom`, `--email`) pour automatiser certaines actions.
+* **GORM/SQLite** : persistance dans une base SQLite.
+* **JSON** : persistance dans un fichier JSON.
+* **Memory** : stockage éphémère en RAM, utile pour les tests.
 
 ---
 
-## 📂 Structure du projet
+## Fonctionnalités
 
-```
-TP/
-│── go.mod
-├── cmd/  
-|   └── main.go             # Point d'entrée : menu CLI + gestion des flags
-│
-└── internal/
-    ├── domain/
-    │   └── contact.go      # Définition du modèle Contact
-    │
-    └── handler/
-        └── contact_handler.go      # Logique métier (CRUD sur les contacts)
-```
-
-* **`internal/domain/contact.go`** : Définit la structure de données `Contact`.
-* **`internal/handler/contact_handler.go`** : Contient la logique pour ajouter, supprimer, lister et mettre à jour les contacts. Les contacts sont stockés en mémoire dans une `map[int]Contact`.
-* **`main.go`** : Interface utilisateur. Gère :
-
-  * le menu CLI interactif
-  * l’exécution via flags (`flag` package)
+* **CRUD complet** : Ajouter, Lister, Mettre à jour, Supprimer des contacts.
+* **Interface CLI** : Commandes claires et standardisées via [Cobra](https://github.com/spf13/cobra).
+* **Stockage configurable** : Changez le backend (GORM, JSON, Memory) via `config.yaml` sans recompiler.
+* **Persistance des données** : Support SQLite et JSON pour conserver les données entre les exécutions.
 
 ---
 
-## ⚙️ Prérequis
+## Structure du projet
 
-* **Go 1.21+** (testé sur Go 1.22)
-* OS supportés : Linux, macOS, Windows
+```
+mini-crm/
+├─ cmd/                   # Commandes Cobra
+│  ├─ root.go
+│  ├─ add.go
+│  ├─ list.go
+│  ├─ update.go
+│  └─ delete.go
+├─ internal/
+│  ├─ app/                # Interface CLI interactive
+│  │  └─ app.go
+│  ├─ config/             # Gestion de la configuration
+│  │  └─ config.go
+│  ├─ database/           # Connexion SQLite/GORM
+│  │  └─ database.go
+│  ├─ models/             # Structures de données
+│  │  └─ contact.go
+│  ├─ repository/         # GORM et JSON stores
+│  │  └─ contact_repository.go
+│  ├─ storage/            # Interface Storer + MemoryStore
+|  |  ├─ json_store.go
+│  |  ├─ storage.go
+│  |  └─ memory.go
+|  └─ utils/ 
+|     └─ utils.go           
+├─ data/                  # Dossier pour DB ou JSON
+│  └─ contacts.db / contacts.json
+├─ config.yaml            # Configuration externe
+└─ go.mod
+```
 
-Vérifie que Go est installé :
+---
+
+## Installation
+
+### Prérequis
+
+* Go >= 1.21 installé ([Télécharger Go](https://go.dev/dl/))
+* Git installé ([Télécharger Git](https://git-scm.com/downloads))
+
+### Cloner le projet
 
 ```bash
-go version
-```
-
----
-
-## 🚀 Installation & Exécution
-
-### 1. Cloner le projet
-
-```bash
-git clone https://github.com/Quanghng/mini-crm
+git clone https://github.com/ton-utilisateur/mini-crm.git
 cd mini-crm
 ```
 
-### 2. Initialiser les dépendances
+---
+
+## Configuration
+
+Le fichier `config.yaml` permet de choisir le type de stockage et le chemin des fichiers :
+
+```yaml
+storage:
+  type: gorm   # valeurs possibles: gorm | json | memory
+
+database:
+  gorm:
+    name: contacts.db
+    dsn: ./data/contacts.db
+  json:
+    name: contacts.json
+    dsn: ./data/contacts.json
+
+app:
+  environment: development
+```
+
+* `storage.type` : sélection du backend.
+* `database.gorm.dsn` : chemin du fichier SQLite.
+* `database.json.dsn` : chemin du fichier JSON.
+* `memory` : ne nécessite pas de fichier, données perdues à la fermeture.
+
+---
+
+## Build & Run
+
+### Windows
+
+1. Ouvrir `cmd` ou PowerShell.
+2. Compiler :
+
+```powershell
+go build -o minicrm.exe ./cmd
+```
+
+3. Exécuter :
+
+```powershell
+.\minicrm.exe
+```
+
+### Mac / Linux
+
+1. Ouvrir le terminal.
+2. Compiler :
 
 ```bash
-go mod tidy
+go build -o minicrm ./cmd
 ```
 
-### 3. Lancer en mode interactif (menu)
+3. Exécuter :
 
 ```bash
-cd cmd
-go run .
-```
-
-Exemple :
-
-```
------ Mini CRM -----
-1. Ajouter un contact
-2. Lister tous les contacts
-3. Supprimer un contact
-4. Mettre à jour un contact
-5. Quitter l'application
-Sélectionnez votre option:
-```
-
-### 4. Lancer en mode flags (ajout rapide d’un contact)
-
-```bash
-go run . --addContact --nom="Alice" --email="alice@mail.com"
+./minicrm
 ```
 
 ---
 
-## 🔮 Améliorations futures possibles
+## CLI
 
-* Persistance des données (sauvegarde des contacts dans un fichier JSON/SQLite).
-* Ajout d’un flag `--listContacts` pour lister les contacts sans menu.
-* Export/Import des contacts.
-* Ajout de tests unitaires.
+### Commande interactive
 
+Si aucun flag n’est passé, le programme lance le menu interactif :
 
+```
+Welcome to Mini CRM!
+--- Main Menu ---
+1. Add a contact
+2. List contacts
+3. Update a contact
+4. Delete a contact
+5. Exit
+```
 
+### Commandes Cobra
+
+* **Ajouter un contact**
+
+```bash
+./minicrm add --name "John Doe" --email "john@example.com"
+```
+
+* **Lister les contacts**
+
+```bash
+./minicrm list
+```
+
+* **Mettre à jour un contact**
+
+```bash
+./minicrm update --id 1 --name "John Smith"
+```
+
+* **Supprimer un contact**
+
+```bash
+./minicrm delete --id 1
+```
+
+---
+
+## Tests / Mémoire
+
+Pour tester rapidement sans persistance, configurez :
+
+```yaml
+storage:
+  type: memory
+```
+
+Toutes les modifications sont perdues à la fermeture de l’application.
+
+---
+
+## Notes
+
+* Le backend **JSON** crée ou met à jour `contacts.json` dans le dossier `data/`.
+* Le backend **GORM** crée ou met à jour `contacts.db` SQLite.
+* Tous les changements de backend se font via `config.yaml`, aucune recompilation nécessaire.
