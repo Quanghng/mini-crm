@@ -1,0 +1,20 @@
+{
+  "contacts": {
+    "1": {
+      "ID": 1,
+      "Name": "fiousadfkj",
+      "Email": "fasdljkfbnasdkf"
+    },
+    "2": {
+      "ID": 2,
+      "Name": "qweqwe",
+      "Email": "qweqweqwwertg"
+    },
+    "3": {
+      "ID": 3,
+      "Name": "wefgefiulg",
+      "Email": "vsdfljikgsfdjkg"
+    }
+  },
+  "next_id": 4
+}
