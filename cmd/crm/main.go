@@ -1,18 +1,15 @@
 package main
 
 import (
-	"fmt"
 	"mini-crm/internal/app"
-	"mini-crm/internal/storage"
+	"mini-crm/internal/database"
+	"mini-crm/internal/repository"
 )
 
 
 func main() {
-	store, err := storage.NewMemoryStore("contacts.json")
-	if err != nil {
-		fmt.Printf("Error initializing store: %v\n", err)
-		return
-	}
+	database.ConnectDB()
 
+	store := repository.NewGORMStore()
 	app.Run(store)
 }

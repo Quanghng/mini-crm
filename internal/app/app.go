@@ -3,6 +3,7 @@ package app
 import (
 	"bufio"
 	"fmt"
+	"mini-crm/internal/models"
 	"mini-crm/internal/storage"
 	"os"
 	"strconv"
@@ -12,7 +13,7 @@ import (
 func Run(store storage.Storer) {
 	
 	reader := bufio.NewReader(os.Stdin)
-	fmt.Println("Welcome to the Mini CRM v3!")
+	fmt.Println("Welcome to the Mini CRM v4!")
 
 	for {
 		fmt.Println("\n--- Main Menu ---")
@@ -55,7 +56,7 @@ func handleAddContact(reader *bufio.Reader, storer storage.Storer) {
 	fmt.Print("Enter contact email: ")
 	email := readLine(reader)
 
-	contact := &storage.Contact{
+	contact := &models.Contact{
 		Name:  name,
 		Email: email,
 	}
