@@ -3,6 +3,7 @@ package cmd
 import (
 	"fmt"
 	"log"
+	"mini-crm/internal/app"
 	"mini-crm/internal/config"
 	"mini-crm/internal/database"
 	"mini-crm/internal/repository"
@@ -19,6 +20,16 @@ var rootCmd = &cobra.Command{
 	Use:   "minicrm",
 	Short: "Mini CRM - Gestion simple de contacts",
 	Long:  "Mini CRM est une application CLI permettant d'ajouter, lister, mettre à jour et supprimer des contacts avec plusieurs backends de stockage.",
+
+	// Appelée si aucune sous-commande n'est utilisée
+	Run: func(cmd *cobra.Command, args []string) {
+		if store == nil {
+			fmt.Println("Erreur: le store n'a pas été initialisé")
+			return
+		}
+		// Lancer le menu interactif
+		app.Run(store)
+	},
 }
 
 
