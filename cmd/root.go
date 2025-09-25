@@ -46,11 +46,13 @@ func initStore() {
 		store = repository.NewGORMStore()
 	case "json":
 		var err error
-		store, err = storage.NewMemoryStore("./data/contacts.json")
+		store, err = storage.NewJsonStore("./data/contacts.json")
 		if err != nil {
 			fmt.Printf("Error initializing JSON store: %v\n", err)
 			os.Exit(1)
 		}
+	case "memory":
+		store = storage.NewMemoryStore()
 	default:
 		log.Fatalf("Type de stockage inconnu: %s", storageType)
 	} 

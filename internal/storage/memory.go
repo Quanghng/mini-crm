@@ -1,52 +1,44 @@
 package storage
 
 import (
-	"fmt"
 	"mini-crm/internal/models"
 )
 
+// MemoryStore est un stockage éphémère en mémoire
 type MemoryStore struct {
 	contacts map[int]*models.Contact
 	nextID   uint
-	filePath string
 }
 
-// Constructor
-func NewMemoryStore(path string) (*MemoryStore, error) {
-	ms := &MemoryStore{
+// NewMemoryStore crée un nouveau MemoryStore vide
+func NewMemoryStore() *MemoryStore {
+	return &MemoryStore{
 		contacts: make(map[int]*models.Contact),
 		nextID:   1,
-		filePath: path,
 	}
-	// Load existing data from file if it exists
-	if err := ms.LoadFromFile(); err != nil {
-		return nil, err
-	}
-	return ms, nil
 }
 
-
-// CRUD operations
-
+// Add ajoute un contact
 func (ms *MemoryStore) Add(contact *models.Contact) error {
 	contact.ID = ms.nextID
 	ms.contacts[int(contact.ID)] = contact
 	ms.nextID++
-	return ms.saveToFile()
+	return nil
 }
 
+// GetAll retourne tous les contacts
 func (ms *MemoryStore) GetAll() ([]*models.Contact, error) {
-	contacts := make([]*models.Contact, 0, len(ms.contacts))
+	list := make([]*models.Contact, 0, len(ms.contacts))
 	for _, c := range ms.contacts {
-		contacts = append(contacts, c)
+		list = append(list, c)
 	}
-	return contacts, nil
+	return list, nil
 }
 
 func (ms *MemoryStore) GetByID(id int) (*models.Contact, error) {
 	c, ok := ms.contacts[id]
 	if !ok {
-		return nil, fmt.Errorf("contact %d not found", id)
+		return nil, ErrContactNotFound(id)
 	}
 	return c, nil
 }
@@ -54,7 +46,7 @@ func (ms *MemoryStore) GetByID(id int) (*models.Contact, error) {
 func (ms *MemoryStore) Update(id int, newName, newEmail string) error {
 	c, ok := ms.contacts[id]
 	if !ok {
-		return fmt.Errorf("contact %d not found", id)
+		return ErrContactNotFound(id)
 	}
 	if newName != "" {
 		c.Name = newName
@@ -62,13 +54,13 @@ func (ms *MemoryStore) Update(id int, newName, newEmail string) error {
 	if newEmail != "" {
 		c.Email = newEmail
 	}
-	return ms.saveToFile()
+	return nil
 }
 
 func (ms *MemoryStore) Delete(id int) error {
 	if _, ok := ms.contacts[id]; !ok {
-		return fmt.Errorf("contact %d not found", id)
+		return ErrContactNotFound(id)
 	}
 	delete(ms.contacts, id)
-	return ms.saveToFile()
+	return nil
 }
